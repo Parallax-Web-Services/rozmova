@@ -79,6 +79,16 @@ $editorial = [
     'Белгород' => 'Belgorod',   // Russian city, Russian-derived form
     'Вагнер'  => 'Wagner',
     'Путин наступает на Киев.' => 'Putin nastupayet na Kyiv.',
+
+    // Oblast capitals and frontline towns as Russian sources name them.
+    'Северодонецк' => 'Sievierodonetsk',
+    'Краматорске'  => 'Kramatorsk',      // declined
+    'Бучи'         => 'Bucha',           // declined
+    'Белая Церковь' => 'Bila Tserkva',   // multi-word
+    'Кривой Рог'   => 'Kryvyi Rih',      // multi-word
+    'Черновцы'     => 'Chernivtsi',
+    'Ужгород'      => 'Uzhhorod',
+    'Изюм'         => 'Izium',
 ];
 
 $p2 = $f2 = 0;

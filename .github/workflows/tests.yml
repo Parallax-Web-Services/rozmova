@@ -1,0 +1,77 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.1', '8.2', '8.3', '8.4']
+
+    name: PHP ${{ matrix.php }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, curl, json
+          coverage: none
+
+      - name: Validate composer.json
+        run: composer validate --strict --no-check-lock
+
+      - name: Lint every PHP file
+        run: find src bin tests examples -name '*.php' -print0 | xargs -0 -n1 -P4 php -l > /dev/null
+
+      - name: Romanization schemes
+        run: php tests/scheme.php
+
+      - name: Ukrainian preference layer
+        run: php tests/preferences.php
+
+      - name: Russian
+        run: php tests/russian.php
+
+      - name: Archive pipeline
+        run: php tests/pipeline.php
+
+      - name: HTTP drivers
+        run: php tests/http.php
+
+      - name: Intake, archival and publishing
+        run: php tests/boundaries.php
+
+      - name: CLI
+        run: php tests/cli.php
+
+      - name: Preference lists lint clean
+        run: php bin/rozmova lint data/preferences.uk.json data/preferences.ru.json
+
+      - name: Example runs
+        run: php examples/pipeline.php > /dev/null
+
+  python:
+    runs-on: ubuntu-latest
+    name: reference services
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # The services need model weights to run, which CI has no business
+      # downloading. Syntax is what can be checked here, and it catches the
+      # class of mistake that otherwise surfaces on the droplet.
+      - name: Compile reference services
+        run: python -m compileall -q deploy/asr/app.py deploy/mt/app.py

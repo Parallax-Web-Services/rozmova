@@ -26,11 +26,16 @@
             "@php tests/russian.php",
             "@php tests/pipeline.php",
             "@php tests/http.php",
-            "@php tests/boundaries.php"
+            "@php tests/boundaries.php",
+            "@php tests/cli.php"
         ],
-        "demo": "@php examples/pipeline.php"
+        "demo": "@php examples/pipeline.php",
+        "lint": "@php bin/rozmova lint data/preferences.uk.json data/preferences.ru.json"
     },
     "suggest": {
         "ext-curl": "Required by the HTTP drivers for self-hosted inference services."
-    }
+    },
+    "bin": [
+        "bin/rozmova"
+    ]
 }

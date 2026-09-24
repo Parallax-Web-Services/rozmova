@@ -1,5 +1,7 @@
 # Rozmova
 
+[![tests](https://github.com/Parallax-Web-Services/rozmova/actions/workflows/tests.yml/badge.svg)](https://github.com/Parallax-Web-Services/rozmova/actions/workflows/tests.yml)
+
 Ukrainian and Russian romanization with an editorial preference layer.
 
 *Розмова* — conversation.
@@ -274,6 +276,43 @@ silently empty transcript is a published empty transcript.
 `deploy/` has a working reference: two containers, a compose file, and sizing
 notes. An archive is batch work, so it runs on CPU.
 
+## Command line
+
+`bin/rozmova` exists for the editorial workflow. Before adding a preference
+entry, check what the scheme already produces — most names need no entry at
+all, and an unnecessary one is another thing to maintain and to get wrong.
+
+```console
+$ rozmova compare "Знам'янка, Львів, Згорани"
+  cyrillic  Знам'янка, Львів, Згорани
+  national  Znamianka, Lviv, Zghorany
+  bgn       Znam”yanka, L’viv, Z·horany
+  learner   Znamʺyanka, Lʹviv, Z-horany
+
+$ rozmova translit --prefs=data/preferences.uk.json "Зеленський подякував ЗСУ"
+Zelenskyy podiakuvav ZSU
+  override  Зеленський -> Zelenskyy
+  override  ЗСУ -> ZSU (Armed Forces of Ukraine)
+```
+
+Override notes go to stderr, so stdout stays pipeable. `--json` emits the
+output and the applied overrides together.
+
+`rozmova lint` validates a preference list and reports anything worth a second
+look:
+
+```console
+$ rozmova lint data/preferences.*.json
+data/preferences.uk.json
+  OK    35 entries, 112 surface forms, longest match 3 word(s)
+  note  11 entries carry neither a note nor a gloss
+```
+
+A form claimed by two entries with different answers is rejected outright.
+Letting the later one quietly win would flip the archive's spelling of a name
+with nothing to show for it — and because `adj` expansion generates forms
+automatically, the collision may be one nobody typed.
+
 ## Tests
 
 No dependencies. The scheme suite asserts every example in the official KMU 2010
@@ -287,6 +326,7 @@ php tests/russian.php       # 33 cases -- Russian schemes and editorial layer
 php tests/pipeline.php      # 20 cases -- archive pipeline guarantees
 php tests/http.php          # 16 cases -- HTTP drivers against a live fixture server
 php tests/boundaries.php    # 28 cases -- intake, archival and publishing
+php tests/cli.php           # 18 cases -- command line
 ```
 
 Or `composer test`.

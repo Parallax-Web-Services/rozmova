@@ -1,0 +1,226 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Editorial command line for Rozmova.
+ *
+ * The workflow this serves: before adding a preference entry, check what the
+ * scheme already produces. Most names need no entry at all -- the standard is
+ * right and an unnecessary entry is one more thing to maintain and to get
+ * wrong.
+ */
+
+foreach ([__DIR__ . '/../vendor/autoload.php', __DIR__ . '/../tests/bootstrap.php'] as $loader) {
+    if (is_file($loader)) {
+        require $loader;
+        break;
+    }
+}
+
+use Parallax\Rozmova\PreferenceList;
+use Parallax\Rozmova\Romanizer;
+use Parallax\Rozmova\RussianTransliterator;
+use Parallax\Rozmova\Transliterator;
+use Parallax\Rozmova\UkrainianTransliterator;
+
+const USAGE = <<<TXT
+rozmova — Ukrainian and Russian romanization
+
+USAGE
+  rozmova translit [options] [text]   romanize text (reads stdin if text omitted)
+  rozmova compare  [options] [text]   show every scheme side by side
+  rozmova lint <file...>              validate preference lists
+  rozmova schemes                     list available schemes
+
+OPTIONS
+  --lang=uk|ru        source language (default: uk)
+  --scheme=NAME       scheme to use (default: national for uk, bgn for ru)
+  --prefs=PATH        preference list to apply
+  --json              machine-readable output
+
+EXAMPLES
+  rozmova translit "Зеленський подякував ЗСУ"
+  rozmova translit --prefs=data/preferences.uk.json "Зеленський"
+  rozmova compare "Знам'янка"
+  rozmova lint data/preferences.*.json
+  cat speech.txt | rozmova translit --prefs=data/preferences.uk.json
+
+TXT;
+
+/** @return array{0: array<string,string>, 1: list<string>} */
+function parseArgs(array $argv): array
+{
+    $options = [];
+    $rest    = [];
+
+    foreach (array_slice($argv, 2) as $arg) {
+        if (str_starts_with($arg, '--')) {
+            [$k, $v] = array_pad(explode('=', substr($arg, 2), 2), 2, '1');
+            $options[$k] = $v;
+        } else {
+            $rest[] = $arg;
+        }
+    }
+
+    return [$options, $rest];
+}
+
+function transliteratorFor(string $lang, ?string $scheme): Transliterator
+{
+    return match ($lang) {
+        'uk'    => new UkrainianTransliterator($scheme ?? UkrainianTransliterator::NATIONAL),
+        'ru'    => new RussianTransliterator($scheme ?? RussianTransliterator::BGN),
+        default => throw new InvalidArgumentException(sprintf('Unknown language "%s". Expected uk or ru.', $lang)),
+    };
+}
+
+function schemesFor(string $lang): array
+{
+    return $lang === 'ru' ? RussianTransliterator::schemes() : UkrainianTransliterator::schemes();
+}
+
+function readInput(array $rest): string
+{
+    if ($rest !== []) {
+        return implode(' ', $rest);
+    }
+
+    $stdin = stream_get_contents(STDIN);
+
+    return is_string($stdin) ? rtrim($stdin, "\n") : '';
+}
+
+function fail(string $message): never
+{
+    fwrite(STDERR, $message . PHP_EOL);
+    exit(1);
+}
+
+$command = $argv[1] ?? '';
+
+if ($command === '' || in_array($command, ['-h', '--help', 'help'], true)) {
+    echo USAGE;
+    exit($command === '' ? 1 : 0);
+}
+
+[$options, $rest] = parseArgs($argv);
+$lang             = $options['lang'] ?? 'uk';
+$json             = isset($options['json']);
+
+try {
+    switch ($command) {
+        case 'schemes':
+            foreach (['uk', 'ru'] as $l) {
+                printf("%s: %s\n", $l, implode(', ', schemesFor($l)));
+            }
+            break;
+
+        case 'translit':
+            $text = readInput($rest);
+
+            if (trim($text) === '') {
+                fail('Nothing to romanize. Pass text as an argument or on stdin.');
+            }
+
+            $prefs = isset($options['prefs'])
+                ? PreferenceList::fromJsonFile($options['prefs'])
+                : new PreferenceList();
+
+            $romanizer = Romanizer::make(transliteratorFor($lang, $options['scheme'] ?? null), $prefs);
+            $output    = $romanizer->romanize($text);
+
+            if ($json) {
+                echo json_encode([
+                    'source'    => $text,
+                    'output'    => $output,
+                    'language'  => $lang,
+                    'scheme'    => $options['scheme'] ?? ($lang === 'ru' ? 'bgn' : 'national'),
+                    'overrides' => $romanizer->appliedOverrides(),
+                ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), "\n";
+                break;
+            }
+
+            echo $output, "\n";
+
+            foreach ($romanizer->appliedOverrides() as $o) {
+                fprintf(STDERR, "  override  %s -> %s%s\n", $o['cyrillic'], $o['latin'], $o['gloss'] ? " ({$o['gloss']})" : '');
+            }
+            break;
+
+        case 'compare':
+            $text = readInput($rest);
+
+            if (trim($text) === '') {
+                fail('Nothing to compare. Pass text as an argument or on stdin.');
+            }
+
+            $rows = ['cyrillic' => $text];
+
+            foreach (schemesFor($lang) as $scheme) {
+                $rows[$scheme] = transliteratorFor($lang, $scheme)->transliterate($text);
+            }
+
+            if ($json) {
+                echo json_encode($rows, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), "\n";
+                break;
+            }
+
+            $width = max(array_map('strlen', array_keys($rows)));
+
+            foreach ($rows as $label => $value) {
+                printf("  %-{$width}s  %s\n", $label, $value);
+            }
+            break;
+
+        case 'lint':
+            if ($rest === []) {
+                fail('Nothing to lint. Pass one or more preference list paths.');
+            }
+
+            $problems = 0;
+
+            foreach ($rest as $path) {
+                try {
+                    $list = PreferenceList::fromJsonFile($path);
+                } catch (Throwable $e) {
+                    printf("%s\n  FAIL  %s\n", $path, $e->getMessage());
+                    $problems++;
+                    continue;
+                }
+
+                $raw     = json_decode((string) file_get_contents($path), true);
+                $entries = $raw['entries'] ?? [];
+                $unnoted = 0;
+                $outputs = [];
+
+                foreach ($entries as $entry) {
+                    if (!isset($entry['note']) && !isset($entry['gloss'])) {
+                        $unnoted++;
+                    }
+                    $outputs[$entry['latin']] = ($outputs[$entry['latin']] ?? 0) + 1;
+                }
+
+                $shared = array_filter($outputs, static fn (int $n): bool => $n > 1);
+
+                printf("%s\n  OK    %d entries, %d surface forms, longest match %d word(s)\n",
+                    $path, count($entries), $list->count(), $list->maxWords());
+
+                if ($unnoted > 0) {
+                    printf("  note  %d entr%s carry neither a note nor a gloss\n", $unnoted, $unnoted === 1 ? 'y' : 'ies');
+                }
+
+                foreach ($shared as $latin => $n) {
+                    printf("  note  %d entries share the output \"%s\" — intentional for name variants, worth a look otherwise\n", $n, $latin);
+                }
+            }
+
+            exit($problems === 0 ? 0 : 1);
+
+        default:
+            fail(sprintf("Unknown command \"%s\".\n\n%s", $command, USAGE));
+    }
+} catch (Throwable $e) {
+    fail('Error: ' . $e->getMessage());
+}

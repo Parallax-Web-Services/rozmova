@@ -86,6 +86,23 @@ final class PreferenceList
                 continue;
             }
 
+            $existing = $this->index[$key] ?? null;
+
+            // Two entries claiming the same surface form is an editorial
+            // contradiction, not a precedence question. Silently letting the
+            // later one win would flip the archive's spelling of a name with
+            // nothing to show for it -- and `adj` expansion generates forms
+            // automatically, so the collision may be one nobody typed.
+            if ($existing !== null && $existing['latin'] !== $entry['latin']) {
+                throw new InvalidArgumentException(sprintf(
+                    'Preference conflict: "%s" is claimed by both "%s" and "%s". '
+                    . 'Remove one, or narrow the forms they expand to.',
+                    $form,
+                    $existing['latin'],
+                    $entry['latin'],
+                ));
+            }
+
             $this->index[$key] = [
                 'latin' => $entry['latin'],
                 'gloss' => $entry['gloss'] ?? null,

@@ -13,39 +13,525 @@
     "",
     "Field reference is identical to preferences.uk.json."
   ],
-
   "entries": [
     {
-      "forms": ["Киев", "Киева", "Киеву", "Киеве", "Киевом"],
+      "forms": [
+        "Киев",
+        "Киева",
+        "Киеву",
+        "Киеве",
+        "Киевом"
+      ],
       "latin": "Kyiv",
       "note": "Russian source, Ukrainian city. Not Kiyev (romanized Russian) and not Kiev (Russian-derived English)."
     },
-    { "forms": ["Харьков", "Харькова", "Харькову", "Харькове", "Харьковом"], "latin": "Kharkiv", "note": "Russian source, Ukrainian city." },
-    { "forms": ["Одесса", "Одессы", "Одессе", "Одессу", "Одессой"], "latin": "Odesa", "note": "Russian source, Ukrainian city. One s." },
-    { "forms": ["Львов", "Львова", "Львову", "Львове", "Львовом"], "latin": "Lviv", "note": "Russian source, Ukrainian city." },
-    { "forms": ["Николаев", "Николаева", "Николаеву", "Николаеве"], "latin": "Mykolaiv", "note": "Russian source, Ukrainian city." },
-    { "forms": ["Чернобыль", "Чернобыля", "Чернобылю", "Чернобылем"], "latin": "Chornobyl", "note": "Russian source, Ukrainian site." },
-    { "forms": ["Запорожье", "Запорожья", "Запорожью", "Запорожьем"], "latin": "Zaporizhzhia", "note": "Russian source, Ukrainian city." },
-    { "forms": ["Луганск", "Луганска", "Луганску", "Луганске"], "latin": "Luhansk", "note": "Russian source, Ukrainian city." },
-    { "forms": ["Днепропетровск", "Днепр", "Днепра", "Днепре"], "latin": "Dnipro", "note": "Russian source, Ukrainian city. Also collapses the pre-2016 name." },
-    { "forms": ["Мариуполь", "Мариуполя", "Мариуполю", "Мариуполем"], "latin": "Mariupol", "note": "Russian source, Ukrainian city." },
-    { "forms": ["Крым", "Крыма", "Крыму", "Крымом"], "latin": "Crimea", "gloss": "Crimea", "note": "Translated, as in the Ukrainian list." },
-
-    { "forms": ["Москва", "Москвы", "Москве", "Москву", "Москвой"], "latin": "Moscow", "gloss": "Moscow", "note": "Translated. Russian city keeps its established English name." },
-    { "forms": ["Россия", "России", "Россию", "Россией"], "latin": "Russia", "gloss": "Russia" },
-    { "forms": ["Украина", "Украины", "Украине", "Украину", "Украиной"], "latin": "Ukraine", "gloss": "Ukraine" },
-    { "forms": ["Кремль", "Кремля", "Кремлю", "Кремлём", "Кремлем"], "latin": "Kremlin", "gloss": "Kremlin" },
-    { "forms": ["Белгород", "Белгорода", "Белгороду", "Белгороде"], "latin": "Belgorod", "note": "Russian city, Russian-derived form retained." },
-
-    { "forms": ["Путин", "Путина", "Путину", "Путине", "Путиным"], "latin": "Putin" },
-    { "forms": ["Лавров", "Лаврова", "Лаврову", "Лавровым"], "latin": "Lavrov" },
-    { "forms": ["Шойгу"], "latin": "Shoigu" },
-    { "forms": ["Медведев", "Медведева", "Медведеву", "Медведевым"], "latin": "Medvedev" },
-    { "forms": ["Песков", "Пескова", "Пескову", "Песковым"], "latin": "Peskov" },
-
-    { "forms": ["Росгвардия", "Росгвардии"], "latin": "Rosgvardia", "gloss": "Russian National Guard" },
-    { "forms": ["ФСБ"], "latin": "FSB", "gloss": "Federal Security Service" },
-    { "forms": ["ГРУ"], "latin": "GRU", "gloss": "Russian military intelligence" },
-    { "forms": ["Вагнер", "Вагнера", "Вагнеру"], "latin": "Wagner", "note": "Established English form; romanizing the Russian would give Vagner." }
+    {
+      "forms": [
+        "Харьков",
+        "Харькова",
+        "Харькову",
+        "Харькове",
+        "Харьковом"
+      ],
+      "latin": "Kharkiv",
+      "note": "Russian source, Ukrainian city."
+    },
+    {
+      "forms": [
+        "Одесса",
+        "Одессы",
+        "Одессе",
+        "Одессу",
+        "Одессой"
+      ],
+      "latin": "Odesa",
+      "note": "Russian source, Ukrainian city. One s."
+    },
+    {
+      "forms": [
+        "Львов",
+        "Львова",
+        "Львову",
+        "Львове",
+        "Львовом"
+      ],
+      "latin": "Lviv",
+      "note": "Russian source, Ukrainian city."
+    },
+    {
+      "forms": [
+        "Николаев",
+        "Николаева",
+        "Николаеву",
+        "Николаеве"
+      ],
+      "latin": "Mykolaiv",
+      "note": "Russian source, Ukrainian city."
+    },
+    {
+      "forms": [
+        "Чернобыль",
+        "Чернобыля",
+        "Чернобылю",
+        "Чернобылем"
+      ],
+      "latin": "Chornobyl",
+      "note": "Russian source, Ukrainian site."
+    },
+    {
+      "forms": [
+        "Запорожье",
+        "Запорожья",
+        "Запорожью",
+        "Запорожьем"
+      ],
+      "latin": "Zaporizhzhia",
+      "note": "Russian source, Ukrainian city."
+    },
+    {
+      "forms": [
+        "Луганск",
+        "Луганска",
+        "Луганску",
+        "Луганске"
+      ],
+      "latin": "Luhansk",
+      "note": "Russian source, Ukrainian city."
+    },
+    {
+      "forms": [
+        "Днепропетровск",
+        "Днепр",
+        "Днепра",
+        "Днепре"
+      ],
+      "latin": "Dnipro",
+      "note": "Russian source, Ukrainian city. Also collapses the pre-2016 name."
+    },
+    {
+      "forms": [
+        "Мариуполь",
+        "Мариуполя",
+        "Мариуполю",
+        "Мариуполем"
+      ],
+      "latin": "Mariupol",
+      "note": "Russian source, Ukrainian city."
+    },
+    {
+      "forms": [
+        "Крым",
+        "Крыма",
+        "Крыму",
+        "Крымом"
+      ],
+      "latin": "Crimea",
+      "gloss": "Crimea",
+      "note": "Translated, as in the Ukrainian list."
+    },
+    {
+      "forms": [
+        "Москва",
+        "Москвы",
+        "Москве",
+        "Москву",
+        "Москвой"
+      ],
+      "latin": "Moscow",
+      "gloss": "Moscow",
+      "note": "Translated. Russian city keeps its established English name."
+    },
+    {
+      "forms": [
+        "Россия",
+        "России",
+        "Россию",
+        "Россией"
+      ],
+      "latin": "Russia",
+      "gloss": "Russia"
+    },
+    {
+      "forms": [
+        "Украина",
+        "Украины",
+        "Украине",
+        "Украину",
+        "Украиной"
+      ],
+      "latin": "Ukraine",
+      "gloss": "Ukraine"
+    },
+    {
+      "forms": [
+        "Кремль",
+        "Кремля",
+        "Кремлю",
+        "Кремлём",
+        "Кремлем"
+      ],
+      "latin": "Kremlin",
+      "gloss": "Kremlin"
+    },
+    {
+      "forms": [
+        "Белгород",
+        "Белгорода",
+        "Белгороду",
+        "Белгороде"
+      ],
+      "latin": "Belgorod",
+      "note": "Russian city, Russian-derived form retained."
+    },
+    {
+      "forms": [
+        "Путин",
+        "Путина",
+        "Путину",
+        "Путине",
+        "Путиным"
+      ],
+      "latin": "Putin"
+    },
+    {
+      "forms": [
+        "Лавров",
+        "Лаврова",
+        "Лаврову",
+        "Лавровым"
+      ],
+      "latin": "Lavrov"
+    },
+    {
+      "forms": [
+        "Шойгу"
+      ],
+      "latin": "Shoigu"
+    },
+    {
+      "forms": [
+        "Медведев",
+        "Медведева",
+        "Медведеву",
+        "Медведевым"
+      ],
+      "latin": "Medvedev"
+    },
+    {
+      "forms": [
+        "Песков",
+        "Пескова",
+        "Пескову",
+        "Песковым"
+      ],
+      "latin": "Peskov"
+    },
+    {
+      "forms": [
+        "Росгвардия",
+        "Росгвардии"
+      ],
+      "latin": "Rosgvardia",
+      "gloss": "Russian National Guard"
+    },
+    {
+      "forms": [
+        "ФСБ"
+      ],
+      "latin": "FSB",
+      "gloss": "Federal Security Service"
+    },
+    {
+      "forms": [
+        "ГРУ"
+      ],
+      "latin": "GRU",
+      "gloss": "Russian military intelligence"
+    },
+    {
+      "forms": [
+        "Вагнер",
+        "Вагнера",
+        "Вагнеру"
+      ],
+      "latin": "Wagner",
+      "note": "Established English form; romanizing the Russian would give Vagner."
+    },
+    {
+      "forms": [
+        "Чернигов",
+        "Чернигова",
+        "Чернигову",
+        "Чернигове"
+      ],
+      "latin": "Chernihiv",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Винница",
+        "Винницы",
+        "Виннице",
+        "Винницу"
+      ],
+      "latin": "Vinnytsia",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Ровно"
+      ],
+      "latin": "Rivne",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Тернополь",
+        "Тернополя",
+        "Тернополе"
+      ],
+      "latin": "Ternopil",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Ивано-Франковск",
+        "Ивано-Франковска",
+        "Ивано-Франковске"
+      ],
+      "latin": "Ivano-Frankivsk",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Ужгород",
+        "Ужгорода",
+        "Ужгороде"
+      ],
+      "latin": "Uzhhorod",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Черновцы",
+        "Черновцов",
+        "Черновцах"
+      ],
+      "latin": "Chernivtsi",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Хмельницкий",
+        "Хмельницкого",
+        "Хмельницком"
+      ],
+      "latin": "Khmelnytskyi",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Кропивницкий",
+        "Кировоград",
+        "Кировограда"
+      ],
+      "latin": "Kropyvnytskyi",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Черкассы",
+        "Черкасс",
+        "Черкассах"
+      ],
+      "latin": "Cherkasy",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Сумы",
+        "Сум",
+        "Сумах"
+      ],
+      "latin": "Sumy",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Кременчуг",
+        "Кременчуга",
+        "Кременчуге"
+      ],
+      "latin": "Kremenchuk",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Краматорск",
+        "Краматорска",
+        "Краматорске"
+      ],
+      "latin": "Kramatorsk",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Славянск",
+        "Славянска",
+        "Славянске"
+      ],
+      "latin": "Sloviansk",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Северодонецк",
+        "Северодонецка",
+        "Северодонецке"
+      ],
+      "latin": "Sievierodonetsk",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Лисичанск",
+        "Лисичанска",
+        "Лисичанске"
+      ],
+      "latin": "Lysychansk",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Покровск",
+        "Покровска",
+        "Покровске"
+      ],
+      "latin": "Pokrovsk",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Часов Яр"
+      ],
+      "latin": "Chasiv Yar",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Купянск",
+        "Купянска",
+        "Купянске"
+      ],
+      "latin": "Kupiansk",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Изюм",
+        "Изюма",
+        "Изюме"
+      ],
+      "latin": "Izium",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Мелитополь",
+        "Мелитополя",
+        "Мелитополе"
+      ],
+      "latin": "Melitopol",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Бердянск",
+        "Бердянска",
+        "Бердянске"
+      ],
+      "latin": "Berdiansk",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Энергодар",
+        "Энергодара",
+        "Энергодаре"
+      ],
+      "latin": "Enerhodar",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Каховка",
+        "Каховки",
+        "Каховке"
+      ],
+      "latin": "Kakhovka",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Белая Церковь"
+      ],
+      "latin": "Bila Tserkva",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Кривой Рог",
+        "Кривого Рога"
+      ],
+      "latin": "Kryvyi Rih",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Ирпень",
+        "Ирпеня",
+        "Ирпене"
+      ],
+      "latin": "Irpin",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Буча",
+        "Бучи",
+        "Буче",
+        "Бучу"
+      ],
+      "latin": "Bucha",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Гостомель",
+        "Гостомеля",
+        "Гостомеле"
+      ],
+      "latin": "Hostomel",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Житомир",
+        "Житомира",
+        "Житомире"
+      ],
+      "latin": "Zhytomyr",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    },
+    {
+      "forms": [
+        "Полтава",
+        "Полтавы",
+        "Полтаве",
+        "Полтаву"
+      ],
+      "latin": "Poltava",
+      "note": "Russian source, Ukrainian place. English form follows Ukrainian usage."
+    }
   ]
 }
