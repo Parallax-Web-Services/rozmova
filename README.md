@@ -194,6 +194,29 @@ leaderboard is already led by Conformers — and nothing above the interface
 should have to notice. `FixtureSpeechToText` and `FixtureTranslator` are for
 tests and the demo, not for production.
 
+`HttpSpeechToText` and `HttpTranslator` talk to self-hosted services over a
+two-endpoint contract:
+
+```
+POST /transcribe   multipart: audio, language
+                -> {"text": "...", "engine": "..."}
+
+POST /translate    {"text": "...", "from": "uk", "to": "en"}
+                -> {"text": "...", "engine": "..."}
+```
+
+The `engine` field is not decoration: it is recorded against every rendition,
+so a record published today still names the model that produced it after that
+model has been replaced twice.
+
+The transport retries connection failures and 5xx, and never retries 4xx — a
+malformed request fails identically three times and the pipeline should hear
+about it once. Every failure raises rather than returning a default, because a
+silently empty transcript is a published empty transcript.
+
+`deploy/` has a working reference: two containers, a compose file, and sizing
+notes. An archive is batch work, so it runs on CPU.
+
 ## Tests
 
 No dependencies. The scheme suite asserts every example in the official KMU 2010

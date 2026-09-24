@@ -1,0 +1,43 @@
+# Self-hosted inference for the Rozmova pipeline.
+#
+# Neither service is exposed publicly: they listen on the internal network
+# only, and the PHP application reaches them over it. An ASR endpoint open to
+# the internet is free transcription for whoever finds it.
+
+services:
+  asr:
+    build: ./asr
+    environment:
+      ASR_MODEL: ${ASR_MODEL:-large-v3}
+      ASR_DEVICE: cpu
+      ASR_COMPUTE_TYPE: int8
+    volumes:
+      - models:/root/.cache
+    expose:
+      - "8080"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 30s
+      timeout: 10s
+      start_period: 300s   # first run downloads weights
+      retries: 3
+
+  mt:
+    build: ./mt
+    environment:
+      MT_MODEL: ${MT_MODEL:-facebook/nllb-200-distilled-600M}
+    volumes:
+      - models:/root/.cache
+    expose:
+      - "8080"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 30s
+      timeout: 10s
+      start_period: 300s
+      retries: 3
+
+volumes:
+  models:

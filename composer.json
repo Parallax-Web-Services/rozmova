@@ -24,8 +24,12 @@
             "@php tests/scheme.php",
             "@php tests/preferences.php",
             "@php tests/russian.php",
-            "@php tests/pipeline.php"
+            "@php tests/pipeline.php",
+            "@php tests/http.php"
         ],
         "demo": "@php examples/pipeline.php"
+    },
+    "suggest": {
+        "ext-curl": "Required by the HTTP drivers for self-hosted inference services."
     }
 }
