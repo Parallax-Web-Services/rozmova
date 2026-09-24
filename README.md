@@ -145,6 +145,55 @@ language the sentence was written in.
 The source text is preserved verbatim either way. Only the English rendering
 takes a position, and the position is recorded in the entry's `note`.
 
+## Archive pipeline
+
+Romanization is one stage of the job. `src/Archive` is the skeleton around it:
+ingest, transcribe, translate, romanize, publish.
+
+```php
+$pipeline = new Pipeline(
+    new TranscribeStage($speechToText, 'uk'),
+    new TranslateStage($translator, 'en'),
+    new RomanizeStage(Romanizer::ukrainian(...)),
+);
+
+$record = $pipeline->run(Record::open($id, $provenance, $audio));
+```
+
+`php examples/pipeline.php` runs it end to end with fixture engines.
+
+Three properties it is built to hold:
+
+**Provenance.** Every record carries its source URL, capture time, media type
+and a SHA-256 of the bytes as fetched, before any processing. An item without a
+chain of custody is an anecdote.
+
+**Machine output is labelled.** Every rendition names what produced it and
+whether that was a person or an engine. A machine translation of a wartime
+speech that is not visibly marked as machine output is a fabricated quote
+waiting to be screenshotted, so the flag is required rather than inferred. The
+romanization stage additionally records which editorial overrides fired, so a
+reader who queries a spelling can be shown the rule.
+
+**Append-only, and checkable.** Adding a rendition returns a new record rather
+than mutating the old one, so a later pass cannot quietly overwrite an earlier
+one. `digest()` hashes provenance and every rendition together, recomputable by
+anyone holding the published record — an archive that can be silently edited is
+not evidence of anything.
+
+A stage that throws stops the run, returns the record as far as it got, and puts
+the reason in the log. A partial record is worth more than a dropped one. The
+fixture translator refuses unknown input rather than echoing it, so a missing
+translation fails loudly instead of publishing Ukrainian as English.
+
+### Engines
+
+`SpeechToText` and `Translator` are two methods each. The engines behind them
+will turn over repeatedly — Whisper is a 2023 model and the Ukrainian
+leaderboard is already led by Conformers — and nothing above the interface
+should have to notice. `FixtureSpeechToText` and `FixtureTranslator` are for
+tests and the demo, not for production.
+
 ## Tests
 
 No dependencies. The scheme suite asserts every example in the official KMU 2010
@@ -155,6 +204,7 @@ its own passports.
 php tests/scheme.php        # 82 cases -- every example in the KMU 2010 table
 php tests/preferences.php   # 24 cases -- Ukrainian editorial layer
 php tests/russian.php       # 33 cases -- Russian schemes and editorial layer
+php tests/pipeline.php      # 20 cases -- archive pipeline guarantees
 ```
 
 Or `composer test`.

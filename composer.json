@@ -23,7 +23,9 @@
         "test": [
             "@php tests/scheme.php",
             "@php tests/preferences.php",
-            "@php tests/russian.php"
-        ]
+            "@php tests/russian.php",
+            "@php tests/pipeline.php"
+        ],
+        "demo": "@php examples/pipeline.php"
     }
 }
