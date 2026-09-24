@@ -25,7 +25,8 @@
             "@php tests/preferences.php",
             "@php tests/russian.php",
             "@php tests/pipeline.php",
-            "@php tests/http.php"
+            "@php tests/http.php",
+            "@php tests/boundaries.php"
         ],
         "demo": "@php examples/pipeline.php"
     },

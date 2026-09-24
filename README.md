@@ -145,10 +145,67 @@ language the sentence was written in.
 The source text is preserved verbatim either way. Only the English rendering
 takes a position, and the position is recorded in the entry's `note`.
 
+## Where this sits
+
+Rozmova is the middle of three. It does not fetch and it does not store.
+
+```
+Relay  ──▶  Intake ──▶ transcribe ──▶ translate ──▶ romanize ──┬──▶  Holo   (archive)
+(ingest)                                                       └──▶  Relay  (publish)
+```
+
+Each boundary is an interface with a local implementation, so the chain runs
+end to end before Relay or Holo exist. `php examples/pipeline.php` runs it.
+
+### Intake — what Relay hands over
+
+Transport is deliberately unspecified; webhook, queue and file drop all produce
+the same envelope.
+
+```json
+{
+  "id":           "tryzantha/2026-09-24/address",
+  "source_url":   "https://www.president.gov.ua/news/example",
+  "source_label": "Office of the President of Ukraine",
+  "captured_at":  "2026-09-24T15:00:00Z",
+  "media_type":   "audio/wav",
+  "sha256":       "optional, but VERIFIED when present",
+  "text":         "optional, for items published as text rather than speech"
+}
+```
+
+`captured_at` is parsed strictly. `new DateTimeImmutable($value)` would accept
+`"last tuesday"` and record a capture time the item never had.
+
+A declared `sha256` is checked against the bytes, not believed. An archive that
+records a digest it never verified is recording a claim. This is the one moment
+it can still be checked cheaply, before anything derived exists.
+
+Items that arrive as text are already transcribed, and their transcript is
+attributed to the publisher rather than flagged as machine output — because it
+is the publisher's own words.
+
+### Holo — archival
+
+`ArchiveStore` is content-addressed and write-once. `FilesystemArchiveStore`
+stands in for Holo and shows the two properties the real thing needs: source
+bytes addressed by their own hash, so identical payloads are stored once and a
+reference verifies itself; and existing objects never rewritten, so an entry
+cannot be silently replaced.
+
+A correction is a new digest, so the original and the corrected record both
+survive. There is a test for that.
+
+### Relay — publishing
+
+`Publisher` overwrites, on purpose: publishing the corrected version is the
+point. Correction history lives in the archive, where each revision has its own
+digest. `HttpPublisher` POSTs the record to Relay when it exists;
+`FilesystemPublisher` writes it to disk until then.
+
 ## Archive pipeline
 
-Romanization is one stage of the job. `src/Archive` is the skeleton around it:
-ingest, transcribe, translate, romanize, publish.
+Romanization is one stage of the job. `src/Archive` is the skeleton around it.
 
 ```php
 $pipeline = new Pipeline(
@@ -228,6 +285,8 @@ php tests/scheme.php        # 82 cases -- every example in the KMU 2010 table
 php tests/preferences.php   # 24 cases -- Ukrainian editorial layer
 php tests/russian.php       # 33 cases -- Russian schemes and editorial layer
 php tests/pipeline.php      # 20 cases -- archive pipeline guarantees
+php tests/http.php          # 16 cases -- HTTP drivers against a live fixture server
+php tests/boundaries.php    # 28 cases -- intake, archival and publishing
 ```
 
 Or `composer test`.
