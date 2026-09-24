@@ -1,0 +1,51 @@
+{
+  "$comment": [
+    "Editorial romanization preferences for Russian-language source.",
+    "",
+    "This list exists mainly to hold one editorial position. When a Russian",
+    "source names a Ukrainian place, the romanization of the Russian name is",
+    "not what this archive publishes: Киев is rendered Kyiv, not Kiyev and not",
+    "Kiev. The source said what it said and is preserved verbatim; the English",
+    "rendering follows Ukrainian usage.",
+    "",
+    "Russian places keep their Russian-derived forms. The rule is about whose",
+    "place it is, not about which language the sentence was written in.",
+    "",
+    "Field reference is identical to preferences.uk.json."
+  ],
+
+  "entries": [
+    {
+      "forms": ["Киев", "Киева", "Киеву", "Киеве", "Киевом"],
+      "latin": "Kyiv",
+      "note": "Russian source, Ukrainian city. Not Kiyev (romanized Russian) and not Kiev (Russian-derived English)."
+    },
+    { "forms": ["Харьков", "Харькова", "Харькову", "Харькове", "Харьковом"], "latin": "Kharkiv", "note": "Russian source, Ukrainian city." },
+    { "forms": ["Одесса", "Одессы", "Одессе", "Одессу", "Одессой"], "latin": "Odesa", "note": "Russian source, Ukrainian city. One s." },
+    { "forms": ["Львов", "Львова", "Львову", "Львове", "Львовом"], "latin": "Lviv", "note": "Russian source, Ukrainian city." },
+    { "forms": ["Николаев", "Николаева", "Николаеву", "Николаеве"], "latin": "Mykolaiv", "note": "Russian source, Ukrainian city." },
+    { "forms": ["Чернобыль", "Чернобыля", "Чернобылю", "Чернобылем"], "latin": "Chornobyl", "note": "Russian source, Ukrainian site." },
+    { "forms": ["Запорожье", "Запорожья", "Запорожью", "Запорожьем"], "latin": "Zaporizhzhia", "note": "Russian source, Ukrainian city." },
+    { "forms": ["Луганск", "Луганска", "Луганску", "Луганске"], "latin": "Luhansk", "note": "Russian source, Ukrainian city." },
+    { "forms": ["Днепропетровск", "Днепр", "Днепра", "Днепре"], "latin": "Dnipro", "note": "Russian source, Ukrainian city. Also collapses the pre-2016 name." },
+    { "forms": ["Мариуполь", "Мариуполя", "Мариуполю", "Мариуполем"], "latin": "Mariupol", "note": "Russian source, Ukrainian city." },
+    { "forms": ["Крым", "Крыма", "Крыму", "Крымом"], "latin": "Crimea", "gloss": "Crimea", "note": "Translated, as in the Ukrainian list." },
+
+    { "forms": ["Москва", "Москвы", "Москве", "Москву", "Москвой"], "latin": "Moscow", "gloss": "Moscow", "note": "Translated. Russian city keeps its established English name." },
+    { "forms": ["Россия", "России", "Россию", "Россией"], "latin": "Russia", "gloss": "Russia" },
+    { "forms": ["Украина", "Украины", "Украине", "Украину", "Украиной"], "latin": "Ukraine", "gloss": "Ukraine" },
+    { "forms": ["Кремль", "Кремля", "Кремлю", "Кремлём", "Кремлем"], "latin": "Kremlin", "gloss": "Kremlin" },
+    { "forms": ["Белгород", "Белгорода", "Белгороду", "Белгороде"], "latin": "Belgorod", "note": "Russian city, Russian-derived form retained." },
+
+    { "forms": ["Путин", "Путина", "Путину", "Путине", "Путиным"], "latin": "Putin" },
+    { "forms": ["Лавров", "Лаврова", "Лаврову", "Лавровым"], "latin": "Lavrov" },
+    { "forms": ["Шойгу"], "latin": "Shoigu" },
+    { "forms": ["Медведев", "Медведева", "Медведеву", "Медведевым"], "latin": "Medvedev" },
+    { "forms": ["Песков", "Пескова", "Пескову", "Песковым"], "latin": "Peskov" },
+
+    { "forms": ["Росгвардия", "Росгвардии"], "latin": "Rosgvardia", "gloss": "Russian National Guard" },
+    { "forms": ["ФСБ"], "latin": "FSB", "gloss": "Federal Security Service" },
+    { "forms": ["ГРУ"], "latin": "GRU", "gloss": "Russian military intelligence" },
+    { "forms": ["Вагнер", "Вагнера", "Вагнеру"], "latin": "Wagner", "note": "Established English form; romanizing the Russian would give Vagner." }
+  ]
+}

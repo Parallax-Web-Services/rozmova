@@ -2,16 +2,14 @@
 
 declare(strict_types=1);
 
-require __DIR__ . '/../src/UkrainianTransliterator.php';
-require __DIR__ . '/../src/PreferenceList.php';
-require __DIR__ . '/../src/Romanizer.php';
+require __DIR__ . '/bootstrap.php';
 
 use Parallax\Rozmova\PreferenceList;
 use Parallax\Rozmova\Romanizer;
 use Parallax\Rozmova\UkrainianTransliterator;
 
 $prefs     = PreferenceList::fromJsonFile(__DIR__ . '/../data/preferences.uk.json');
-$romanizer = Romanizer::make(UkrainianTransliterator::NATIONAL, $prefs);
+$romanizer = Romanizer::ukrainian(UkrainianTransliterator::NATIONAL, $prefs);
 
 $cases = [
     // The case that started this: standard says Zelenskyi, usage says Zelenskyy.

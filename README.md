@@ -1,10 +1,10 @@
 # Rozmova
 
-Ukrainian romanization with an editorial preference layer.
+Ukrainian and Russian romanization with an editorial preference layer.
 
 *Розмова* — conversation.
 
-Rozmova turns Ukrainian Cyrillic into Latin script and lets an editorial team
+Rozmova turns Cyrillic into Latin script and lets an editorial team
 override the result where a standard and real usage disagree. It is a pure text
 transformation: no model, no network, no state. Whatever happens to the speech
 or translation stack around it, this layer is unaffected.
@@ -100,6 +100,51 @@ Spellings in this list are Ukrainian-derived: Kyiv not Kiev, Kharkiv not
 Kharkov, Odesa not Odessa, Chornobyl not Chernobyl. That is a deliberate
 choice recorded in the `note` field, not a transliteration artefact.
 
+## Russian
+
+Three schemes, and the same preference layer.
+
+| Scheme | Notes |
+|---|---|
+| `BGN` | BGN/PCGN 1947. Usual choice in English-language press. Renders `е`/`ё` as `ye`/`yë` word-initially and after a vowel, `й`, `ъ` or `ь` — which is why `Достоевский` is `Dostoyevskiy`. |
+| `PASSPORT` | ICAO Doc 9303 / GOST R 52535.1-2006, in Russian passports since 2013. Collapses `ё` to `e` and drops the soft sign, so it loses information the others keep. |
+| `SCIENTIFIC` | ISO 9:1995. Strictly one-to-one with diacritics, and so the only scheme here that round-trips back to Cyrillic. |
+
+```
+cyrillic      bgn            passport     scientific
+Достоевский   Dostoyevskiy   Dostoevskii  Dostoevskij
+Хрущёв        Khrushchëv     Khrushchev   Hruŝëv
+Подъезд       Pod”yezd       Podieezd     Podʺezd
+Юлия          Yuliya         Iuliia       Ûliâ
+```
+
+Note against the Ukrainian tables: `г` is `g` here, not `h`, and there is no
+`зг` rule — with `г` = `g` nothing collides with `ж`.
+
+### Whose place is it
+
+`data/preferences.ru.json` carries one editorial position that matters more
+than the schemes do. When a Russian source names a Ukrainian place, the
+romanized Russian name is not what gets published:
+
+```php
+$romanizer = Romanizer::russian(
+    RussianTransliterator::BGN,
+    PreferenceList::fromJsonFile(__DIR__ . '/data/preferences.ru.json'),
+);
+
+$romanizer->romanize('Путин наступает на Киев.');
+// Putin nastupayet na Kyiv.
+```
+
+`Киев` becomes **Kyiv** — not `Kiyev` (romanized Russian) and not `Kiev`
+(Russian-derived English). Russian places keep their Russian-derived forms:
+`Белгород` stays `Belgorod`. The rule is about whose place it is, not which
+language the sentence was written in.
+
+The source text is preserved verbatim either way. Only the English rendering
+takes a position, and the position is recorded in the entry's `note`.
+
 ## Tests
 
 No dependencies. The scheme suite asserts every example in the official KMU 2010
@@ -107,13 +152,12 @@ table, so a pass means the output matches what the Ukrainian state applies to
 its own passports.
 
 ```
-php tests/scheme.php        # 82 cases
-php tests/preferences.php   # 24 cases
+php tests/scheme.php        # 82 cases -- every example in the KMU 2010 table
+php tests/preferences.php   # 24 cases -- Ukrainian editorial layer
+php tests/russian.php       # 33 cases -- Russian schemes and editorial layer
 ```
 
-## Status
-
-Ukrainian is complete. Russian is in scope and not yet implemented.
+Or `composer test`.
 
 ## License
 

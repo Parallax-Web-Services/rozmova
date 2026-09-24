@@ -16,19 +16,28 @@ final class Romanizer
     private array $applied = [];
 
     public function __construct(
-        private readonly UkrainianTransliterator $transliterator,
+        private readonly Transliterator $transliterator,
         private readonly PreferenceList $preferences,
     ) {
     }
 
-    public static function make(
+    public static function make(Transliterator $transliterator, ?PreferenceList $preferences = null): self
+    {
+        return new self($transliterator, $preferences ?? new PreferenceList());
+    }
+
+    public static function ukrainian(
         string $scheme = UkrainianTransliterator::NATIONAL,
         ?PreferenceList $preferences = null,
     ): self {
-        return new self(
-            new UkrainianTransliterator($scheme),
-            $preferences ?? new PreferenceList(),
-        );
+        return self::make(new UkrainianTransliterator($scheme), $preferences);
+    }
+
+    public static function russian(
+        string $scheme = RussianTransliterator::BGN,
+        ?PreferenceList $preferences = null,
+    ): self {
+        return self::make(new RussianTransliterator($scheme), $preferences);
     }
 
     /**

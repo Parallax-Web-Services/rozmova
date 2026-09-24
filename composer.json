@@ -3,7 +3,13 @@
     "description": "Ukrainian and Russian romanization with an editorial preference layer.",
     "type": "library",
     "license": "MIT",
-    "keywords": ["ukrainian", "russian", "transliteration", "romanization", "cyrillic"],
+    "keywords": [
+        "ukrainian",
+        "russian",
+        "transliteration",
+        "romanization",
+        "cyrillic"
+    ],
     "require": {
         "php": "^8.1",
         "ext-mbstring": "*"
@@ -16,7 +22,8 @@
     "scripts": {
         "test": [
             "@php tests/scheme.php",
-            "@php tests/preferences.php"
+            "@php tests/preferences.php",
+            "@php tests/russian.php"
         ]
     }
 }
