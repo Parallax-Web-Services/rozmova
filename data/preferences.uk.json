@@ -1,0 +1,113 @@
+{
+  "$comment": [
+    "Editorial romanization preferences for Ukrainian.",
+    "",
+    "Applied BEFORE the transliteration scheme. Anything not matched here falls",
+    "through to the scheme (KMU 2010 by default), so this file holds only the",
+    "cases where a standard and editorial practice disagree.",
+    "",
+    "Fields:",
+    "  forms       Cyrillic surface forms. Ukrainian declines and English does",
+    "              not, so every inflected form maps to one invariant output.",
+    "  declension  Optional. 'adj' expands a -ський/-ний stem across its cases.",
+    "  latin       What the archive publishes.",
+    "  gloss       Optional English meaning, where usage translates rather than",
+    "              romanizes.",
+    "  note        Why the entry exists. This file is an editorial record; the",
+    "              reasoning belongs beside the decision.",
+    "",
+    "Place-name spellings here are Ukrainian-derived, not Russian-derived.",
+    "That is a deliberate editorial position, not a transliteration artefact."
+  ],
+
+  "entries": [
+    {
+      "forms": ["Зеленський"],
+      "declension": "adj",
+      "latin": "Zelenskyy",
+      "note": "KMU 2010 yields Zelenskyi. The Office of the President writes Zelenskyy in English and that is the form in circulation; the archive follows usage over the standard here."
+    },
+    {
+      "forms": ["Зеленська"],
+      "declension": "adj-f",
+      "latin": "Zelenska",
+      "note": "Olena Zelenska. Separate entry on purpose: the feminine surname is a different person and takes a different English form."
+    },
+    {
+      "forms": ["Залужний"],
+      "declension": "adj",
+      "latin": "Zaluzhnyi",
+      "note": "Matches KMU 2010. Anglophone press also uses Zaluzhny; pinned to avoid drifting between the two."
+    },
+    {
+      "forms": ["Сирський"],
+      "declension": "adj",
+      "latin": "Syrskyi",
+      "note": "Matches KMU 2010. Pinned for consistency with other -ський surnames."
+    },
+    { "forms": ["Буданов", "Буданова", "Буданову", "Будановим"], "latin": "Budanov" },
+    { "forms": ["Єрмак", "Єрмака", "Єрмаку", "Єрмаком"], "latin": "Yermak" },
+    { "forms": ["Кулеба", "Кулеби", "Кулебі", "Кулебу", "Кулебою"], "latin": "Kuleba" },
+    { "forms": ["Шмигаль", "Шмигаля", "Шмигалю", "Шмигалем"], "latin": "Shmyhal" },
+
+    {
+      "forms": ["Київ", "Києва", "Києву", "Києві", "Києвом"],
+      "latin": "Kyiv",
+      "note": "Not Kiev. Russian-derived form is not used in this archive."
+    },
+    {
+      "forms": ["Харків", "Харкова", "Харкову", "Харкові", "Харковом"],
+      "latin": "Kharkiv",
+      "note": "Not Kharkov."
+    },
+    {
+      "forms": ["Одеса", "Одеси", "Одесі", "Одесу", "Одесою"],
+      "latin": "Odesa",
+      "note": "One s. Odessa is the Russian-derived spelling."
+    },
+    {
+      "forms": ["Львів", "Львова", "Львову", "Львові", "Львовом"],
+      "latin": "Lviv",
+      "note": "Not Lvov or Lemberg."
+    },
+    {
+      "forms": ["Чорнобиль", "Чорнобиля", "Чорнобилю", "Чорнобилем"],
+      "latin": "Chornobyl",
+      "note": "Not Chernobyl, which transliterates the Russian Чернобыль."
+    },
+    {
+      "forms": ["Крим", "Криму", "Кримом"],
+      "latin": "Crimea",
+      "gloss": "Crimea",
+      "note": "Translated, not romanized. Krym would be unreadable to an English audience."
+    },
+    { "forms": ["Дніпро", "Дніпра", "Дніпру", "Дніпром"], "latin": "Dnipro", "note": "Not Dnepr or Dnepropetrovsk." },
+    { "forms": ["Луганськ", "Луганська", "Луганську", "Луганськом"], "latin": "Luhansk", "note": "Not Lugansk." },
+    { "forms": ["Запоріжжя", "Запоріжжі", "Запоріжжям"], "latin": "Zaporizhzhia" },
+    { "forms": ["Маріуполь", "Маріуполя", "Маріуполю", "Маріуполем"], "latin": "Mariupol" },
+    { "forms": ["Бахмут", "Бахмута", "Бахмуту", "Бахмутом"], "latin": "Bakhmut" },
+    { "forms": ["Авдіївка", "Авдіївки", "Авдіївці", "Авдіївку", "Авдіївкою"], "latin": "Avdiivka" },
+    { "forms": ["Херсон", "Херсона", "Херсону", "Херсоні", "Херсоном"], "latin": "Kherson" },
+    { "forms": ["Донбас", "Донбасу", "Донбасі", "Донбасом"], "latin": "Donbas", "note": "One s." },
+    { "forms": ["Кривий Ріг"], "latin": "Kryvyi Rih" },
+
+    {
+      "forms": ["ЗСУ"],
+      "latin": "ZSU",
+      "gloss": "Armed Forces of Ukraine",
+      "note": "Acronym kept, gloss supplied on first use."
+    },
+    { "forms": ["Збройні сили України"], "latin": "Armed Forces of Ukraine", "note": "Translated; the full Ukrainian name is not romanized in English usage." },
+    { "forms": ["Верховна Рада"], "latin": "Verkhovna Rada", "gloss": "Ukraine's parliament" },
+    { "forms": ["СБУ"], "latin": "SBU", "gloss": "Security Service of Ukraine" },
+    { "forms": ["ГУР"], "latin": "HUR", "gloss": "Defence Intelligence of Ukraine" },
+    { "forms": ["ДСНС"], "latin": "DSNS", "gloss": "State Emergency Service of Ukraine" },
+    { "forms": ["ТЦК"], "latin": "TTsK", "gloss": "territorial recruitment centre" },
+    { "forms": ["НАБУ"], "latin": "NABU", "gloss": "National Anti-Corruption Bureau of Ukraine" },
+    { "forms": ["Укренерго"], "latin": "Ukrenergo", "note": "Company's own English branding; KMU 2010 would give Ukrenerho." },
+    { "forms": ["Азовсталь", "Азовсталі", "Азовсталлю"], "latin": "Azovstal" },
+
+    { "forms": ["Слава Україні"], "latin": "Slava Ukraini", "gloss": "Glory to Ukraine" },
+    { "forms": ["Героям слава"], "latin": "Heroiam slava", "gloss": "Glory to the heroes" }
+  ]
+}
