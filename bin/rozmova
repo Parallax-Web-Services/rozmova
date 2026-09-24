@@ -87,6 +87,12 @@ function readInput(array $rest): string
         return implode(' ', $rest);
     }
 
+    // With no argument and nothing piped in, reading stdin would sit there
+    // until the user works out that Ctrl-D is what we are waiting for.
+    if (stream_isatty(STDIN)) {
+        fail("Nothing to romanize. Pass text as an argument, or pipe it in.\n\n" . USAGE);
+    }
+
     $stdin = stream_get_contents(STDIN);
 
     return is_string($stdin) ? rtrim($stdin, "\n") : '';
