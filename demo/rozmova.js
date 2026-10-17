@@ -210,21 +210,68 @@ export class PreferenceList {
 }
 
 export function romanize(text, scheme = NATIONAL, preferences = null) {
-  const applied = [];
+  return romanizeWith(text, (w) => transliterateWord(w, scheme), preferences);
+}
+
+/*
+ * Preference matching, independent of which alphabet's word transform runs
+ * underneath. Ukrainian and Russian share it so the editorial layer behaves
+ * identically for both.
+ */
+function romanizeWith(text, wordFn, preferences = null) {
+  const segments = segmentWith(text, wordFn, preferences);
+
+  return {
+    text: segments.map((s) => s.reading).join(''),
+    applied: segments
+      .filter((s) => s.override)
+      .map((s) => ({ cyrillic: s.source, latin: s.reading, gloss: s.gloss })),
+  };
+}
+
+/**
+ * The same walk, reported piece by piece instead of joined.
+ *
+ * A caller that annotates each word separately — ruby readings over the
+ * original, say — cannot simply split on spaces and romanize each word: a
+ * multi-word preference entry like Белая Церковь → Bila Tserkva would never
+ * fire, and the output would quietly fall back to the scheme. Segments keep
+ * each override whole, so the annotation lands on the span it belongs to.
+ *
+ * @returns {Array<{source: string, reading: string, word: boolean, override: boolean, gloss: ?string}>}
+ */
+export function segment(text, scheme = NATIONAL, preferences = null) {
+  return segmentWith(text, (w) => transliterateWord(w, scheme), preferences);
+}
+
+export function segmentRu(text, scheme = RU_BGN, preferences = null) {
+  return segmentWith(text, (w) => transliterateRuWord(w, scheme), preferences);
+}
+
+function segmentWith(text, wordFn, preferences = null) {
+  const out = [];
 
   if (!preferences) {
-    return { text: transliterate(text, scheme), applied };
+    for (const [isWord, chunk] of splitWords(text)) {
+      out.push({
+        source: chunk,
+        reading: isWord ? wordFn(chunk) : chunk,
+        word: isWord,
+        override: false,
+        gloss: null,
+      });
+    }
+    return out;
   }
 
   const tokens = splitWords(text);
-  let out = '';
   let i = 0;
 
   while (i < tokens.length) {
     const [isWord, chunk] = tokens[i];
 
     if (!isWord) {
-      out += chunk;
+      out.push({ source: chunk, reading: chunk, word: false, override: false, gloss: null });
       i++;
       continue;
     }
@@ -256,17 +303,130 @@ export function romanize(text, scheme = NATIONAL, preferences = null) {
     if (best) {
       const letters = best.source.replace(/[^\p{L}]/gu, '');
       const shouting = letters.length > 1 && letters.toUpperCase() === letters;
-      out += shouting ? best.entry.latin.toUpperCase() : best.entry.latin;
-      applied.push({ cyrillic: best.source, latin: best.entry.latin, gloss: best.entry.gloss });
+      out.push({
+        source: best.source,
+        reading: shouting ? best.entry.latin.toUpperCase() : best.entry.latin,
+        word: true,
+        override: true,
+        gloss: best.entry.gloss,
+      });
       i += best.consumed;
       continue;
     }
 
-    out += transliterateWord(chunk, scheme);
+    out.push({ source: chunk, reading: wordFn(chunk), word: true, override: false, gloss: null });
     i++;
   }
 
-  return { text: out, applied };
+  return out;
 }
 
 export const SCHEMES = { NATIONAL, BGN, LEARNER };
+
+/* ---- Russian ---------------------------------------------------------- */
+
+const RU_BGN = 'bgn';
+const RU_PASSPORT = 'passport';
+const RU_SCIENTIFIC = 'scientific';
+
+/* Letters after which BGN yots a following е or ё. */
+const YOTTING = ['а', 'е', 'ё', 'и', 'о', 'у', 'ы', 'э', 'ю', 'я', 'й', 'ъ', 'ь'];
+
+const RU_TABLES = {
+  [RU_BGN]: {
+    а: 'a', б: 'b', в: 'v', г: 'g', д: 'd',
+    е: { initial: 'ye', after: { set: YOTTING, value: 'ye' }, default: 'e' },
+    ё: { initial: 'yë', after: { set: YOTTING, value: 'yë' }, default: 'ë' },
+    ж: 'zh', з: 'z', и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n',
+    о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'kh',
+    ц: 'ts', ч: 'ch', ш: 'sh', щ: 'shch',
+    ъ: '”', ы: 'y', ь: '’', э: 'e', ю: 'yu', я: 'ya',
+  },
+  [RU_PASSPORT]: {
+    а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'e', ж: 'zh',
+    з: 'z', и: 'i', й: 'i', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o',
+    п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'kh', ц: 'ts',
+    ч: 'ch', ш: 'sh', щ: 'shch', ъ: 'ie', ы: 'y', ь: '', э: 'e',
+    ю: 'iu', я: 'ia',
+  },
+  [RU_SCIENTIFIC]: {
+    а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'ë', ж: 'ž',
+    з: 'z', и: 'i', й: 'j', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o',
+    п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'h', ц: 'c',
+    ч: 'č', ш: 'š', щ: 'ŝ', ъ: 'ʺ', ы: 'y', ь: 'ʹ', э: 'è',
+    ю: 'û', я: 'â',
+  },
+};
+
+const RU_DIGRAPHS = {
+  [RU_BGN]: { тс: 't·s' },
+  [RU_PASSPORT]: {},
+  [RU_SCIENTIFIC]: {},
+};
+
+function resolveRu(value, atStart, prev) {
+  if (typeof value === 'string') return value;
+  if (atStart && value.initial !== undefined) return value.initial;
+  if (prev !== null && value.after && value.after.set.includes(prev)) return value.after.value;
+  return value.default;
+}
+
+function transliterateRuWord(word, scheme) {
+  const chars = Array.from(word);
+  const allCaps = isAllCaps(chars);
+  const table = RU_TABLES[scheme];
+  const digraphs = RU_DIGRAPHS[scheme];
+  let out = '';
+  let atStart = true;
+  let prev = null;
+
+  for (let i = 0; i < chars.length; i++) {
+    const char = chars[i];
+
+    if (isApostrophe(char)) {
+      atStart = false;
+      prev = "'";
+      continue;
+    }
+
+    const lower = char.toLowerCase();
+    let matched = null;
+
+    if (i + 1 < chars.length) {
+      const pair = lower + chars[i + 1].toLowerCase();
+      if (Object.prototype.hasOwnProperty.call(digraphs, pair)) {
+        matched = digraphs[pair];
+        i++;
+        prev = chars[i].toLowerCase();
+      }
+    }
+
+    if (matched === null) {
+      if (!Object.prototype.hasOwnProperty.call(table, lower)) {
+        out += char;
+        atStart = false;
+        prev = lower;
+        continue;
+      }
+      matched = resolveRu(table[lower], atStart, prev);
+      prev = lower;
+    }
+
+    out += applyCase(matched, char, allCaps);
+    atStart = false;
+  }
+
+  return out;
+}
+
+export function transliterateRu(text, scheme = RU_BGN) {
+  return splitWords(text)
+    .map(([isWord, chunk]) => (isWord ? transliterateRuWord(chunk, scheme) : chunk))
+    .join('');
+}
+
+export function romanizeRu(text, scheme = RU_BGN, preferences = null) {
+  return romanizeWith(text, (w) => transliterateRuWord(w, scheme), preferences);
+}
+
+export const RU_SCHEMES = { BGN: RU_BGN, PASSPORT: RU_PASSPORT, SCIENTIFIC: RU_SCIENTIFIC };

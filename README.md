@@ -292,6 +292,52 @@ $ php demo/dump-php.php > demo/php-output.json && node demo/verify.js
   716 identical, 0 divergent  (179 corpus items)
 ```
 
+## In a browser
+
+`browser/` is the reading layer: it finds Cyrillic in a live page and romanizes
+it, reversibly. It is shell-agnostic — the same module whether an Electron
+`webContents` injects it, a Chromium content script loads it, or an extension
+ships it.
+
+```js
+const reader = await Reader.create({ mode: 'ruby', preferences: { uk, ru } });
+reader.toggle();
+```
+
+Two modes. `replace` swaps the text for its romanization. `ruby` puts the
+reading above the original as a `<ruby>` annotation — the element the web
+already has for pronunciation guides — which is the one a learner wants, since
+the Cyrillic stays on the page to be learned.
+
+### Knowing which language it is
+
+Ukrainian and Russian share most of the alphabet, and romanizing one as the
+other produces confident nonsense rather than an obvious failure: `г` is `h` in
+Ukrainian and `g` in Russian. Four letters exist only in Ukrainian (`і ї є ґ`)
+and four only in Russian (`ы э ъ ё`), which is decisive on any run of prose and
+needs no model or word list. Short runs often contain none of the eight —
+`Москва` is spelled identically in both — so detection reports *undecided*
+rather than guessing, and falls back to what the whole document looked like.
+
+### What it refuses to touch
+
+A reading aid that breaks pages is worse than no reading aid. The walker skips
+`script`, `style`, `code`, `pre`, form controls and editable regions, and
+honours `translate="no"` and `.notranslate`, the opt-out publishers already
+use. Every original is kept, so `revert()` restores the page byte for byte, and
+applied nodes are marked so a second pass is a no-op rather than romanizing its
+own output.
+
+Annotations follow the engine's segments rather than whitespace, so a
+multi-word editorial entry like `Белая Церковь` → `Bila Tserkva` annotates the
+whole name instead of being lost to per-word romanization.
+
+```console
+$ browser/test/run.sh
+browser/dom      24/24 passed
+browser/reader   11/11 passed
+```
+
 ## Command line
 
 `bin/rozmova` exists for the editorial workflow. Before adding a preference

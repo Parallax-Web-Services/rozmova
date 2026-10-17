@@ -1,0 +1,78 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Rozmova Reader</title>
+<style>
+  body { font: 17px/1.75 Georgia, serif; max-width: 42rem; margin: 2rem auto; padding: 0 1rem; color: #1b2430; background: #faf7f2; }
+  h1 { font-size: 1.6rem; line-height: 1.3; }
+  rt { color: #a8651b; }
+  #results { font: 12px ui-monospace, monospace; background: #f2ede4; padding: 10px; white-space: pre; }
+</style>
+<body>
+<article id="page">
+  <h1>Зеленський подякував ЗСУ за оборону Бахмута</h1>
+  <p>Доброго вечора, ми з України! Слава Україні! Героям слава!</p>
+  <p>Президент відвідав Харків, Одесу та Львів. Верховна Рада ухвалила закон.</p>
+</article>
+
+<pre id="results">running…</pre>
+
+<script type="module">
+import { Reader } from '../content.js';
+
+const results = [];
+const check = (l, ok, d = '') => results.push(`${ok ? 'ok  ' : 'FAIL'} ${l}${d ? '  :: ' + d : ''}`);
+
+try {
+  const [uk, ru] = await Promise.all([
+    fetch('../../data/preferences.uk.json').then((r) => r.json()),
+    fetch('../../data/preferences.ru.json').then((r) => r.json()),
+  ]);
+
+  const page = document.getElementById('page');
+  const before = page.innerHTML;
+
+  const reader = await Reader.create({
+    mode: 'ruby',
+    root: page,
+    live: true,
+    preferences: { uk: uk.entries, ru: ru.entries },
+  });
+
+  const survey = reader.survey();
+  check('survey reads the document as uk', survey.language === 'uk', survey.language);
+  check('starts inactive', reader.active === false);
+
+  const applied = reader.apply();
+  check('apply changed nodes', applied.changed > 0, String(applied.changed));
+  check('active after apply', reader.active === true);
+  check('style injected', document.getElementById('rozmova-style') !== null);
+  check('readings present', page.textContent.includes('Zelenskyy') && page.textContent.includes('ZSU'));
+
+  check('apply twice is a no-op', reader.apply().alreadyOn === true);
+
+  reader.toggle();
+  check('toggle removes', reader.active === false && page.innerHTML === before);
+
+  reader.toggle();
+  check('toggle re-applies', reader.active === true && page.textContent.includes('Zelenskyy'));
+
+  /* Content added after the fact gets picked up by the observer. */
+  const added = document.createElement('p');
+  added.textContent = 'Нова новина про Запоріжжя.';
+  page.appendChild(added);
+
+  await new Promise((r) => setTimeout(r, 700));
+  check('live content romanized by the observer',
+    page.textContent.includes('Zaporizhzhia'),
+    added.textContent.slice(0, 40));
+
+  /* Leave it applied so the screenshot shows the reading mode. */
+  check('still active for the screenshot', reader.active === true);
+} catch (e) {
+  check('threw: ' + (e && e.message), false);
+}
+
+const failed = results.filter((x) => x.startsWith('FAIL')).length;
+document.getElementById('results').textContent =
+  results.join('\n') + `\n\n${results.length - failed}/${results.length} passed`;
+</script>

@@ -79,10 +79,23 @@ jobs:
       # Two implementations of one standard drift apart quietly. Regenerate the
       # PHP side from the current source, then require the browser engine to
       # agree with it byte for byte across the whole corpus.
-      - name: Cross-check the demo engine against the library
+      - name: Cross-check the browser engine against the library
         run: |
           php demo/dump-php.php > demo/php-output.json
           node demo/verify.js
+
+  browser:
+    runs-on: ubuntu-latest
+    name: browser layer
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # The DOM layer cannot be tested without a DOM, and a stub would miss
+      # exactly what breaks: TreeWalker filters, contenteditable, ruby
+      # construction, observer timing. These run in real Chromium.
+      - name: Run the browser tests
+        run: browser/test/run.sh "$(command -v google-chrome || command -v chromium-browser)"
 
   python:
     runs-on: ubuntu-latest

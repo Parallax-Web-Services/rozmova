@@ -1,0 +1,101 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Rozmova DOM layer</title>
+<body>
+<article id="page">
+  <h1>Зеленський подякував ЗСУ</h1>
+  <p>Доброго вечора, ми з України! Слава Україні!</p>
+  <p lang="ru">Путин объявил мобилизацию. Москва молчит.</p>
+  <p>Mixed English and Київ in one line.</p>
+  <pre><code>const місто = "Київ";</code></pre>
+  <p translate="no">Не чіпай цей рядок.</p>
+  <p class="notranslate">І цей теж.</p>
+  <div contenteditable="true">Редагований текст.</div>
+  <textarea>Поле вводу.</textarea>
+  <script type="application/json">{"місто": "Київ"}</script>
+</article>
+
+<pre id="results">running…</pre>
+
+<script type="module">
+import { segment, segmentRu, PreferenceList } from '../../demo/rozmova.js';
+import { romanizePage, revert, isApplied } from '../annotate.js';
+
+const results = [];
+const check = (label, ok, detail = '') =>
+  results.push(`${ok ? 'ok  ' : 'FAIL'} ${label}${detail ? '  :: ' + detail : ''}`);
+
+try {
+  const [uk, ru] = await Promise.all([
+    fetch('../../data/preferences.uk.json').then((r) => r.json()),
+    fetch('../../data/preferences.ru.json').then((r) => r.json()),
+  ]);
+
+  const prefsUk = new PreferenceList(uk.entries);
+  const prefsRu = new PreferenceList(ru.entries);
+  const engine = (text, lang) =>
+    lang === 'ru' ? segmentRu(text, 'bgn', prefsRu) : segment(text, 'national', prefsUk);
+
+  const page = document.getElementById('page');
+  const before = page.innerHTML;
+
+  /* ---- ruby mode ---- */
+  const r = romanizePage(page, { mode: 'ruby', segment: engine });
+  check('document detected as uk', r.language === 'uk', r.language);
+  check('changed nodes', r.changed > 0, String(r.changed));
+
+  const text = page.textContent;
+  check('editorial override applied', text.includes('Zelenskyy'));
+  check('acronym override applied', text.includes('ZSU'));
+  check('multi-word override stays one segment', text.includes('Slava Ukraini'));
+  check('ruby keeps the cyrillic original', text.includes('Зеленський'));
+  check('russian paragraph uses the russian table and list',
+    text.includes('Putin') && text.includes('Moscow') && !text.includes('Moskva'));
+
+  /* ---- must not touch ---- */
+  check('code block untouched', page.querySelector('pre code').textContent === 'const місто = "Київ";');
+  check('translate=no untouched', page.querySelector('[translate="no"]').textContent === 'Не чіпай цей рядок.');
+  check('.notranslate untouched', page.querySelector('.notranslate').textContent === 'І цей теж.');
+  check('contenteditable untouched', page.querySelector('[contenteditable]').textContent === 'Редагований текст.');
+  check('textarea untouched', page.querySelector('textarea').value === 'Поле вводу.');
+  check('json script untouched', page.querySelector('script[type="application/json"]').textContent.includes('Київ'));
+
+  /* ---- ruby structure ---- */
+  const rubies = page.querySelectorAll('ruby');
+  check('ruby annotations built', rubies.length > 0, String(rubies.length));
+  check('ruby is original + rt reading',
+    rubies[0].childNodes[0].nodeType === 3 && rubies[0].querySelector('rt') !== null);
+
+  /* ---- idempotence ---- */
+  const afterFirst = page.innerHTML;
+  const second = romanizePage(page, { mode: 'ruby', segment: engine });
+  check('second pass is a no-op', second.changed === 0 && page.innerHTML === afterFirst, String(second.changed));
+
+  /* ---- revert ---- */
+  const rev = revert(page);
+  check('revert restores every holder', rev.restored === r.changed, `${rev.restored} vs ${r.changed}`);
+  check('page identical after revert', page.innerHTML === before);
+  check('isApplied false after revert', isApplied(page) === false);
+
+  /* ---- replace mode ---- */
+  romanizePage(page, { mode: 'replace', segment: engine });
+  const t2 = page.textContent;
+  check('replace mode drops the cyrillic', !t2.includes('Зеленський') && t2.includes('Zelenskyy'));
+  check('replace mode builds no ruby', page.querySelectorAll('ruby').length === 0);
+  revert(page);
+  check('revert works from replace mode', page.innerHTML === before);
+
+  /* ---- forcing a language overrides detection ---- */
+  romanizePage(page, { mode: 'replace', segment: engine, language: 'ru' });
+  check('forced ru romanizes г as g', page.textContent.includes('Zelensʹkiy') || /Zelens/.test(page.textContent));
+  revert(page);
+  check('clean after forced pass', page.innerHTML === before);
+} catch (e) {
+  check('threw: ' + (e && e.message), false, String(e && e.stack).split('\n')[1] || '');
+}
+
+const failed = results.filter((x) => x.startsWith('FAIL')).length;
+document.getElementById('results').textContent =
+  results.join('\n') + `\n\n${results.length - failed}/${results.length} passed`;
+document.title = failed === 0 ? 'ALLPASS' : `FAILED ${failed}`;
+</script>
