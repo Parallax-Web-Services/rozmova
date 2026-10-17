@@ -276,6 +276,22 @@ silently empty transcript is a published empty transcript.
 `deploy/` has a working reference: two containers, a compose file, and sizing
 notes. An archive is batch work, so it runs on CPU.
 
+## Demo
+
+[**Live demo**](https://claude.ai/artifact/UNEMpHMc3DnmBKhXr9SJ2p) — type Ukrainian and watch it romanize, with the editorial overrides marked where they fire.
+
+`demo/` holds the page and a JavaScript port of the Ukrainian engine, so the
+conversion runs in the browser with no network call. A second implementation of
+one standard drifts apart quietly, so `demo/verify.js` runs both over the same
+corpus — every official KMU 2010 example, every surface form in the preference
+list, and sentences carrying punctuation and case — and requires byte-identical
+output. 716 comparisons, checked in CI.
+
+```console
+$ php demo/dump-php.php > demo/php-output.json && node demo/verify.js
+  716 identical, 0 divergent  (179 corpus items)
+```
+
 ## Command line
 
 `bin/rozmova` exists for the editorial workflow. Before adding a preference

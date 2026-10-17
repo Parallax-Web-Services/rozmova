@@ -59,6 +59,31 @@ jobs:
       - name: Example runs
         run: php examples/pipeline.php > /dev/null
 
+  port:
+    runs-on: ubuntu-latest
+    name: js port matches php
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, curl, json
+          coverage: none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Two implementations of one standard drift apart quietly. Regenerate the
+      # PHP side from the current source, then require the browser engine to
+      # agree with it byte for byte across the whole corpus.
+      - name: Cross-check the demo engine against the library
+        run: |
+          php demo/dump-php.php > demo/php-output.json
+          node demo/verify.js
+
   python:
     runs-on: ubuntu-latest
     name: reference services

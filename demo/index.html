@@ -1,0 +1,725 @@
+<title>Rozmova</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+/* Layout: a parallel-text edition — source, romanization and English set in
+   facing columns, stacking to one at phone width. Amber is reserved for places
+   where an editorial rule overrode the standard. */
+:root {
+  --paper:      #faf7f2;
+  --panel:      #f2ede4;
+  --ink:        #1b2430;
+  --ink-soft:   #5a6675;
+  --rule:       #ddd5c8;
+  --accent:     #a8651b;
+  --accent-bg:  #f6e8d4;
+  --blue:       #2d4a6b;
+
+  --serif: "Literata", Georgia, "Times New Roman", serif;
+  --mono:  "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:     #141a21;
+    --panel:     #1c242d;
+    --ink:       #e8e3d9;
+    --ink-soft:  #97a3b2;
+    --rule:      #2e3945;
+    --accent:    #e0a44f;
+    --accent-bg: #33281a;
+    --blue:      #8fb4da;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper:     #141a21;
+  --panel:     #1c242d;
+  --ink:       #e8e3d9;
+  --ink-soft:  #97a3b2;
+  --rule:      #2e3945;
+  --accent:    #e0a44f;
+  --accent-bg: #33281a;
+  --blue:      #8fb4da;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+
+header { padding-block: 56px 36px; }
+
+h1 {
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  line-height: 1.05;
+  margin: 0 0 .5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.sub {
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+  max-width: 54ch;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 1.1rem;
+}
+
+h2 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 .4rem;
+  letter-spacing: -0.01em;
+}
+
+section { padding-block: 40px; border-top: 1px solid var(--rule); }
+section > p.lede { color: var(--ink-soft); max-width: 62ch; margin: 0 0 1.6rem; }
+
+/* ---- live converter ---- */
+
+.converter {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+label.field {
+  display: block;
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: .5rem;
+}
+
+textarea {
+  width: 100%;
+  min-width: 0;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 12px 14px;
+  resize: vertical;
+  min-height: 88px;
+}
+
+textarea:focus-visible, button:focus-visible, select:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.output {
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 12px 14px;
+  min-height: 88px;
+  overflow-wrap: anywhere;
+}
+
+mark {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border-radius: 2px;
+  padding: 0 .15em;
+  font-weight: 500;
+}
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+select {
+  font-family: var(--mono);
+  font-size: .85rem;
+  padding: 7px 10px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+}
+
+button.chip {
+  font-family: var(--serif);
+  font-size: .92rem;
+  padding: 7px 12px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  cursor: pointer;
+}
+button.chip:hover { border-color: var(--blue); color: var(--blue); }
+
+.applied {
+  font-family: var(--mono);
+  font-size: .8rem;
+  color: var(--ink-soft);
+  display: grid;
+  gap: 4px;
+}
+.applied b { color: var(--accent); font-weight: 500; }
+
+/* ---- parallel text ---- */
+
+.parallel { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
+.prow { display: grid; grid-template-columns: 1.1fr 1.1fr .9fr; gap: 1px; background: var(--rule); }
+.prow > div { background: var(--paper); padding: 14px 16px; min-width: 0; }
+.prow.head > div {
+  background: var(--panel);
+  font-family: var(--mono);
+  font-size: .68rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding-block: 10px;
+}
+.cy { font-size: 1.08rem; }
+.la { font-family: var(--mono); font-size: .98rem; color: var(--blue); }
+.en { color: var(--ink-soft); font-style: italic; }
+
+/* ---- scheme table ---- */
+
+.schemes { width: 100%; border-collapse: collapse; font-size: .95rem; }
+.schemes th, .schemes td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.schemes th {
+  font-family: var(--mono);
+  font-size: .68rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+.schemes td.m { font-family: var(--mono); color: var(--blue); }
+.scroller { overflow-x: auto; }
+
+.note {
+  background: var(--panel);
+  border-left: 2px solid var(--accent);
+  padding: 14px 16px;
+  margin-top: 1.4rem;
+  font-size: .95rem;
+  color: var(--ink-soft);
+}
+.note b { color: var(--ink); font-weight: 600; }
+
+footer {
+  border-top: 1px solid var(--rule);
+  padding-block: 32px 48px;
+  font-size: .88rem;
+  color: var(--ink-soft);
+}
+footer a { color: var(--blue); }
+
+@media (max-width: 720px) {
+  .prow { grid-template-columns: 1fr; }
+  .prow.head { display: none; }
+  .prow > div { padding: 10px 14px; }
+  .prow > div:first-child { padding-top: 14px; }
+  .prow > div:last-child { padding-bottom: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Розмова · Ukrainian romanization</p>
+  <h1>Ukrainian, in three readings at once</h1>
+  <p class="sub">Cyrillic as written, Latin as pronounced, English as meant. Type below — the conversion runs in the page, with no network call.</p>
+</header>
+
+<section style="border-top:none; padding-top:0">
+  <div class="converter">
+    <div>
+      <label class="field" for="src">Ukrainian</label>
+      <textarea id="src" spellcheck="false">Доброго вечора, ми з України! Слава Україні!</textarea>
+    </div>
+
+    <div class="controls">
+      <select id="scheme" aria-label="Romanization scheme">
+        <option value="national">National (KMU 2010) — passports and road signs</option>
+        <option value="learner">Learner — keeps the soft sign</option>
+        <option value="bgn">BGN/PCGN — English-language press</option>
+      </select>
+      <button class="chip" type="button" data-fill="Слава Україні! Героям слава!">Slava Ukraini</button>
+      <button class="chip" type="button" data-fill="Зеленський подякував ЗСУ за оборону Бахмута.">Overrides</button>
+      <button class="chip" type="button" data-fill="Знам'янка, Згорани, Костянтин, Львів, Запоріжжя">Hard cases</button>
+    </div>
+
+    <div>
+      <label class="field" for="out">Romanized <span id="scheme-name"></span></label>
+      <div class="output" id="out" aria-live="polite"></div>
+    </div>
+
+    <div class="applied" id="applied" hidden></div>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Reading view</p>
+  <h2>Parallel text</h2>
+  <p class="lede">How an archive page sets it: the source unchanged, a romanization a learner can read aloud, and the English. Everyday phrases first, then the ones you meet in the news.</p>
+
+  <div class="parallel" id="parallel">
+    <div class="prow head"><div>Cyrillic</div><div>Romanized</div><div>English</div></div>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Three standards</p>
+  <h2>The same word, spelled three ways</h2>
+  <p class="lede">Romanization is not one thing. The national system is what a passport and a road sign use, and it drops information on purpose. The learner variant keeps what you need in order to pronounce the word.</p>
+
+  <div class="scroller">
+    <table class="schemes" id="schemes">
+      <thead>
+        <tr><th>Ukrainian</th><th>National</th><th>Learner</th><th>BGN/PCGN</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <p style="margin:0"><b>Why the learner column differs.</b> The national system drops the soft sign, so <span style="font-family:var(--mono)">Львів</span> becomes <span style="font-family:var(--mono)">Lviv</span> and nothing tells you the <em>l</em> is palatalized — a reader says it hard, where Ukrainian says it soft. The learner column keeps that mark: <span style="font-family:var(--mono)">Lʹviv</span>. Dropping it is right for a passport, where one settled spelling per name matters more than pronunciation, and wrong for someone learning to say the word.</p>
+    <p style="margin:.8rem 0 0">The learner column is a proposal, not a standard, and the table above shows what it costs: dropping the positional rules so that each letter has one stable value turns <span style="font-family:var(--mono)">Київ</span> into <span style="font-family:var(--mono)">Kyyiv</span> and <span style="font-family:var(--mono)">Юрій</span> into <span style="font-family:var(--mono)">Yurij</span>. Predictable to decode, unfamiliar to read. Whether that trade is worth making is a decision about who the reader is.</p>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow">Editorial layer</p>
+  <h2>Where the standard and usage disagree</h2>
+  <p class="lede">KMU 2010 romanizes <span style="font-family:var(--mono)">Зеленський</span> as <span style="font-family:var(--mono)">Zelenskyi</span>. The Office of the President writes <span style="font-family:var(--mono)">Zelenskyy</span>, and that is the spelling in circulation. Both are defensible, so a publication picks one and applies it everywhere — including mid-sentence, where the source reads <span style="font-family:var(--mono)">Зеленського</span> or <span style="font-family:var(--mono)">Зеленським</span>. Ukrainian declines; English does not.</p>
+
+  <div class="parallel" id="overrides">
+    <div class="prow head"><div>Source</div><div>Published</div><div>Why</div></div>
+  </div>
+
+  <div class="note">
+    <b>Every override records its reasoning.</b> Nothing here is a hidden find-and-replace. Each entry carries a note saying who decided and on what grounds, and the engine reports which rules fired on any given pass — so a reader who questions a spelling can be shown the rule instead of asked to trust it. The same layer applies to Russian-language sources, where <span style="font-family:var(--mono)">Киев</span> publishes as <b>Kyiv</b>, while <span style="font-family:var(--mono)">Белгород</span> stays <b>Belgorod</b>. Whose place it is decides the form, not which language the sentence was written in.
+  </div>
+</section>
+
+<footer>
+  <p>Rozmova is an open-source core: three Ukrainian schemes, three Russian ones, an editorial preference layer, and an archival pipeline. The national scheme is verified against every example in the official Cabinet of Ministers table, and the JavaScript running this page is held byte-identical to the PHP library across 716 comparisons.</p>
+  <p><a href="https://github.com/Parallax-Web-Services/rozmova">github.com/Parallax-Web-Services/rozmova</a> · MIT</p>
+</footer>
+
+</div>
+
+<script type="module">
+/*
+ * Rozmova — Ukrainian romanization, JavaScript port.
+ *
+ * A second implementation of src/UkrainianTransliterator.php and
+ * src/PreferenceList.php, so the demo can romanize in the browser.
+ *
+ * Two implementations of the same standard drift. This one is held to the PHP
+ * by demo/verify.js, which runs both over the official KMU 2010 example table
+ * and every preference form in data/preferences.uk.json and requires identical
+ * output. If they diverge, that check fails.
+ */
+
+const NATIONAL = 'national';
+const BGN = 'bgn';
+const LEARNER = 'learner';
+
+const TABLES = {
+  [NATIONAL]: {
+    а: 'a', б: 'b', в: 'v', г: 'h', ґ: 'g', д: 'd', е: 'e',
+    є: { initial: 'ye', default: 'ie' },
+    ж: 'zh', з: 'z', и: 'y', і: 'i',
+    ї: { initial: 'yi', default: 'i' },
+    й: { initial: 'y', default: 'i' },
+    к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's',
+    т: 't', у: 'u', ф: 'f', х: 'kh', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'shch',
+    ю: { initial: 'yu', default: 'iu' },
+    я: { initial: 'ya', default: 'ia' },
+    ь: '',
+  },
+  [BGN]: {
+    а: 'a', б: 'b', в: 'v', г: 'h', ґ: 'g', д: 'd', е: 'e', є: 'ye',
+    ж: 'zh', з: 'z', и: 'y', і: 'i', ї: 'yi', й: 'y', к: 'k', л: 'l',
+    м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u',
+    ф: 'f', х: 'kh', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'shch',
+    ю: 'yu', я: 'ya', ь: '’',
+  },
+  [LEARNER]: {
+    а: 'a', б: 'b', в: 'v', г: 'h', ґ: 'g', д: 'd', е: 'e', є: 'ye',
+    ж: 'zh', з: 'z', и: 'y', і: 'i', ї: 'yi', й: 'j', к: 'k', л: 'l',
+    м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u',
+    ф: 'f', х: 'kh', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'shch',
+    ю: 'yu', я: 'ya', ь: 'ʹ',
+  },
+};
+
+const DIGRAPHS = {
+  [NATIONAL]: { зг: 'zgh' },
+  [BGN]: { зг: 'z·h' },
+  [LEARNER]: { зг: 'z-h' },
+};
+
+const APOSTROPHE_OUT = {
+  [NATIONAL]: '',
+  [BGN]: '”',
+  [LEARNER]: 'ʺ',
+};
+
+const APOSTROPHES = ["'", '’', '‘', 'ʼ', '´', '`'];
+const CYRILLIC = /\p{Script=Cyrillic}/u;
+
+const isApostrophe = (c) => APOSTROPHES.includes(c);
+const isLetter = (c) => CYRILLIC.test(c);
+
+function applyCase(replacement, source, allCaps) {
+  if (replacement === '') return '';
+  if (allCaps) return replacement.toUpperCase();
+  if (source.toLowerCase() === source) return replacement;
+  return replacement.charAt(0).toUpperCase() + replacement.slice(1);
+}
+
+function isAllCaps(chars) {
+  let letters = 0;
+  for (const c of chars) {
+    if (!isLetter(c)) continue;
+    if (c.toUpperCase() !== c) return false;
+    letters++;
+  }
+  return letters > 1;
+}
+
+function splitWords(text) {
+  const chunks = [];
+  let buffer = '';
+  let inWord = false;
+
+  for (const char of Array.from(text)) {
+    const isWordChar = isLetter(char) || isApostrophe(char);
+    if (isWordChar !== inWord && buffer !== '') {
+      chunks.push([inWord, buffer]);
+      buffer = '';
+    }
+    inWord = isWordChar;
+    buffer += char;
+  }
+  if (buffer !== '') chunks.push([inWord, buffer]);
+  return chunks;
+}
+
+function transliterateWord(word, scheme) {
+  const chars = Array.from(word);
+  const allCaps = isAllCaps(chars);
+  const table = TABLES[scheme];
+  const digraphs = DIGRAPHS[scheme];
+  let out = '';
+  let atStart = true;
+
+  for (let i = 0; i < chars.length; i++) {
+    const char = chars[i];
+
+    if (isApostrophe(char)) {
+      out += APOSTROPHE_OUT[scheme];
+      atStart = false;
+      continue;
+    }
+
+    const lower = char.toLowerCase();
+    let matched = null;
+
+    if (i + 1 < chars.length) {
+      const pair = lower + chars[i + 1].toLowerCase();
+      if (Object.prototype.hasOwnProperty.call(digraphs, pair)) {
+        matched = digraphs[pair];
+        i++;
+      }
+    }
+
+    if (matched === null) {
+      if (!Object.prototype.hasOwnProperty.call(table, lower)) {
+        out += char;
+        atStart = false;
+        continue;
+      }
+      const value = table[lower];
+      matched = typeof value === 'string' ? value : (atStart ? value.initial : value.default);
+    }
+
+    out += applyCase(matched, char, allCaps);
+    atStart = false;
+  }
+
+  return out;
+}
+
+function transliterate(text, scheme = NATIONAL) {
+  return splitWords(text)
+    .map(([isWord, chunk]) => (isWord ? transliterateWord(chunk, scheme) : chunk))
+    .join('');
+}
+
+/* ---- preference layer ---- */
+
+const ADJ_M = ['ий', 'ого', 'ому', 'им', 'ім'];
+const ADJ_F = ['а', 'ої', 'ій', 'у', 'ою'];
+
+function expandAdjectival(stems, feminine) {
+  const endings = feminine ? ADJ_F : ADJ_M;
+  const out = [];
+  for (const stem of stems) {
+    out.push(stem);
+    const base = stem.replace(/(ий|ій|а)$/u, '');
+    if (base === stem) continue;
+    for (const ending of endings) out.push(base + ending);
+  }
+  return [...new Set(out)];
+}
+
+function normalise(text) {
+  return text
+    .replace(/[’‘ʼ´`]/g, "'")
+    .replace(/\s+/gu, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+class PreferenceList {
+  constructor(entries = []) {
+    this.index = new Map();
+    this.maxWords = 1;
+
+    for (const entry of entries) {
+      let forms = entry.forms || [];
+      if (entry.declension === 'adj' || entry.declension === 'adj-f') {
+        forms = expandAdjectival(forms, entry.declension === 'adj-f');
+      }
+
+      for (const form of forms) {
+        const key = normalise(form);
+        if (key === '') continue;
+
+        const existing = this.index.get(key);
+        if (existing && existing.latin !== entry.latin) {
+          throw new Error(
+            `Preference conflict: "${form}" is claimed by both "${existing.latin}" and "${entry.latin}".`
+          );
+        }
+
+        this.index.set(key, { latin: entry.latin, gloss: entry.gloss ?? null, note: entry.note ?? null });
+        this.maxWords = Math.max(this.maxWords, key.split(' ').length);
+      }
+    }
+  }
+
+  lookup(phrase) {
+    return this.index.get(normalise(phrase)) ?? null;
+  }
+
+  get size() {
+    return this.index.size;
+  }
+}
+
+function romanize(text, scheme = NATIONAL, preferences = null) {
+  const applied = [];
+
+  if (!preferences) {
+    return { text: transliterate(text, scheme), applied };
+  }
+
+  const tokens = splitWords(text);
+  let out = '';
+  let i = 0;
+
+  while (i < tokens.length) {
+    const [isWord, chunk] = tokens[i];
+
+    if (!isWord) {
+      out += chunk;
+      i++;
+      continue;
+    }
+
+    // Longest match first, spanning whitespace only.
+    let best = null;
+    let words = 0;
+    let source = '';
+    let consumed = 0;
+
+    for (let j = i; j < tokens.length && words < preferences.maxWords; j++) {
+      const [jIsWord, jChunk] = tokens[j];
+
+      if (!jIsWord) {
+        if (jChunk.trim() !== '') break;
+        source += jChunk;
+        consumed = j - i + 1;
+        continue;
+      }
+
+      source += jChunk;
+      words++;
+      consumed = j - i + 1;
+
+      const entry = preferences.lookup(source);
+      if (entry) best = { consumed, entry, source };
+    }
+
+    if (best) {
+      const letters = best.source.replace(/[^\p{L}]/gu, '');
+      const shouting = letters.length > 1 && letters.toUpperCase() === letters;
+      out += shouting ? best.entry.latin.toUpperCase() : best.entry.latin;
+      applied.push({ cyrillic: best.source, latin: best.entry.latin, gloss: best.entry.gloss });
+      i += best.consumed;
+      continue;
+    }
+
+    out += transliterateWord(chunk, scheme);
+    i++;
+  }
+
+  return { text: out, applied };
+}
+
+const SCHEMES = { NATIONAL, BGN, LEARNER };
+
+/* ---- preference data, from data/preferences.uk.json ---- */
+const PREF_ENTRIES = [{"forms":["Зеленський"],"declension":"adj","latin":"Zelenskyy","note":"KMU 2010 yields Zelenskyi. The Office of the President writes Zelenskyy in English and that is the form in circulation; the archive follows usage over the standard here."},{"forms":["Зеленська"],"declension":"adj-f","latin":"Zelenska","note":"Olena Zelenska. Separate entry on purpose: the feminine surname is a different person and takes a different English form."},{"forms":["Залужний"],"declension":"adj","latin":"Zaluzhnyi","note":"Matches KMU 2010. Anglophone press also uses Zaluzhny; pinned to avoid drifting between the two."},{"forms":["Сирський"],"declension":"adj","latin":"Syrskyi","note":"Matches KMU 2010. Pinned for consistency with other -ський surnames."},{"forms":["Буданов","Буданова","Буданову","Будановим"],"latin":"Budanov"},{"forms":["Єрмак","Єрмака","Єрмаку","Єрмаком"],"latin":"Yermak"},{"forms":["Кулеба","Кулеби","Кулебі","Кулебу","Кулебою"],"latin":"Kuleba"},{"forms":["Шмигаль","Шмигаля","Шмигалю","Шмигалем"],"latin":"Shmyhal"},{"forms":["Київ","Києва","Києву","Києві","Києвом"],"latin":"Kyiv","note":"Not Kiev. Russian-derived form is not used in this archive."},{"forms":["Харків","Харкова","Харкову","Харкові","Харковом"],"latin":"Kharkiv","note":"Not Kharkov."},{"forms":["Одеса","Одеси","Одесі","Одесу","Одесою"],"latin":"Odesa","note":"One s. Odessa is the Russian-derived spelling."},{"forms":["Львів","Львова","Львову","Львові","Львовом"],"latin":"Lviv","note":"Not Lvov or Lemberg."},{"forms":["Чорнобиль","Чорнобиля","Чорнобилю","Чорнобилем"],"latin":"Chornobyl","note":"Not Chernobyl, which transliterates the Russian Чернобыль."},{"forms":["Крим","Криму","Кримом"],"latin":"Crimea","gloss":"Crimea","note":"Translated, not romanized. Krym would be unreadable to an English audience."},{"forms":["Дніпро","Дніпра","Дніпру","Дніпром"],"latin":"Dnipro","note":"Not Dnepr or Dnepropetrovsk."},{"forms":["Луганськ","Луганська","Луганську","Луганськом"],"latin":"Luhansk","note":"Not Lugansk."},{"forms":["Запоріжжя","Запоріжжі","Запоріжжям"],"latin":"Zaporizhzhia"},{"forms":["Маріуполь","Маріуполя","Маріуполю","Маріуполем"],"latin":"Mariupol"},{"forms":["Бахмут","Бахмута","Бахмуту","Бахмутом"],"latin":"Bakhmut"},{"forms":["Авдіївка","Авдіївки","Авдіївці","Авдіївку","Авдіївкою"],"latin":"Avdiivka"},{"forms":["Херсон","Херсона","Херсону","Херсоні","Херсоном"],"latin":"Kherson"},{"forms":["Донбас","Донбасу","Донбасі","Донбасом"],"latin":"Donbas","note":"One s."},{"forms":["Кривий Ріг"],"latin":"Kryvyi Rih"},{"forms":["ЗСУ"],"latin":"ZSU","gloss":"Armed Forces of Ukraine","note":"Acronym kept, gloss supplied on first use."},{"forms":["Збройні сили України"],"latin":"Armed Forces of Ukraine","note":"Translated; the full Ukrainian name is not romanized in English usage."},{"forms":["Верховна Рада"],"latin":"Verkhovna Rada","gloss":"Ukraine's parliament"},{"forms":["СБУ"],"latin":"SBU","gloss":"Security Service of Ukraine"},{"forms":["ГУР"],"latin":"HUR","gloss":"Defence Intelligence of Ukraine"},{"forms":["ДСНС"],"latin":"DSNS","gloss":"State Emergency Service of Ukraine"},{"forms":["ТЦК"],"latin":"TTsK","gloss":"territorial recruitment centre"},{"forms":["НАБУ"],"latin":"NABU","gloss":"National Anti-Corruption Bureau of Ukraine"},{"forms":["Укренерго"],"latin":"Ukrenergo","note":"Company's own English branding; KMU 2010 would give Ukrenerho."},{"forms":["Азовсталь","Азовсталі","Азовсталлю"],"latin":"Azovstal"},{"forms":["Слава Україні"],"latin":"Slava Ukraini","gloss":"Glory to Ukraine"},{"forms":["Героям слава"],"latin":"Heroiam slava","gloss":"Glory to the heroes"}];
+
+const prefs = new PreferenceList(PREF_ENTRIES);
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+
+const SCHEME_LABEL = { national: 'KMU 2010', learner: 'learner variant', bgn: 'BGN/PCGN' };
+
+/* ---- live converter ---- */
+
+function render() {
+  const text = $('src').value;
+  const scheme = $('scheme').value;
+  const { text: out, applied } = romanize(text, scheme, prefs);
+
+  $('scheme-name').textContent = '· ' + SCHEME_LABEL[scheme];
+
+  // Mark the spans an editorial rule produced, left to right.
+  let html = esc(out);
+  for (const a of applied) {
+    const needle = esc(a.latin);
+    const at = html.indexOf(needle);
+    if (at === -1) continue;
+    html = html.slice(0, at) + '\u0000' + needle + '\u0001' + html.slice(at + needle.length);
+  }
+  html = html.replace(/\u0000/g, '<mark>').replace(/\u0001/g, '</mark>');
+  $('out').innerHTML = html || '<span style="color:var(--ink-soft)">—</span>';
+
+  const box = $('applied');
+  if (applied.length === 0) {
+    box.hidden = true;
+    box.innerHTML = '';
+    return;
+  }
+  box.hidden = false;
+  box.innerHTML = applied
+    .map((a) => `<div>${esc(a.cyrillic)} → <b>${esc(a.latin)}</b>${a.gloss ? ' · ' + esc(a.gloss) : ''}</div>`)
+    .join('');
+}
+
+$('src').addEventListener('input', render);
+$('scheme').addEventListener('change', render);
+
+for (const btn of document.querySelectorAll('button[data-fill]')) {
+  btn.addEventListener('click', () => {
+    $('src').value = btn.dataset.fill;
+    render();
+  });
+}
+
+/* ---- parallel text ---- */
+
+const PARALLEL = [
+  ['Доброго ранку!', 'Good morning.'],
+  ['Дякую.', 'Thank you.'],
+  ['Як справи?', 'How are you?'],
+  ['Я не розумію.', "I don't understand."],
+  ['Будь ласка.', 'Please. / You’re welcome.'],
+  ['Слава Україні!', 'Glory to Ukraine.'],
+  ['Героям слава!', 'Glory to the heroes.'],
+  ['Доброго вечора, ми з України!', 'Good evening, we are from Ukraine.'],
+];
+
+$('parallel').insertAdjacentHTML('beforeend', PARALLEL.map(([cy, en]) => {
+  const la = romanize(cy, 'learner', prefs).text;
+  return `<div class="prow"><div class="cy">${esc(cy)}</div><div class="la">${esc(la)}</div><div class="en">${esc(en)}</div></div>`;
+}).join(''));
+
+/* ---- scheme comparison ---- */
+
+const WORDS = ['Львів', 'Знам’янка', 'Згорани', 'Костянтин', 'Запоріжжя', 'Юрій', 'Київ'];
+
+document.querySelector('#schemes tbody').innerHTML = WORDS.map((w) => `
+  <tr>
+    <td>${esc(w)}</td>
+    <td class="m">${esc(transliterate(w, 'national'))}</td>
+    <td class="m">${esc(transliterate(w, 'learner'))}</td>
+    <td class="m">${esc(transliterate(w, 'bgn'))}</td>
+  </tr>`).join('');
+
+/* ---- editorial overrides ---- */
+
+const OVERRIDES = [
+  ['Зеленський', 'nominative — the standard would give Zelenskyi'],
+  ['Зеленського', 'genitive — English does not decline, so it lands on the same form'],
+  ['Зеленська', 'feminine — a different person, and a different English name'],
+  ['ЗСУ', 'acronym kept, with a gloss supplied on first use'],
+  ['Крим', 'translated rather than romanized; Krym would not be read'],
+];
+
+$('overrides').insertAdjacentHTML('beforeend', OVERRIDES.map(([cy, why]) => {
+  const { text, applied } = romanize(cy, 'national', prefs);
+  const gloss = applied[0]?.gloss;
+  return `<div class="prow"><div class="cy">${esc(cy)}</div><div class="la"><mark>${esc(text)}</mark>${gloss ? ` <span style="color:var(--ink-soft)">${esc(gloss)}</span>` : ''}</div><div class="en">${esc(why)}</div></div>`;
+}).join(''));
+
+render();
+</script>

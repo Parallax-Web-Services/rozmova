@@ -4,3 +4,4 @@ composer.lock
 .DS_Store
 __pycache__/
 *.pyc
+demo/php-output.json
